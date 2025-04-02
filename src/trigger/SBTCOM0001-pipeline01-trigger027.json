@@ -1,0 +1,29 @@
+{
+    "name": "SBTCOM0001-pipeline01-trigger027",
+    "properties": {
+        "description": "ファイル削除パイプライン起動のための削除トリガー",
+        "annotations": [],
+        "runtimeState": "Stopped",
+        "pipelines": [
+            {
+                "pipelineReference": {
+                    "referenceName": "SBTCOM0001-pipeline01",
+                    "type": "PipelineReference"
+                },
+                "parameters": {
+                    "tmp_dir": "@trigger().outputs.body.folderPath",
+                    "tmp_file_name": "@trigger().outputs.body.filename"
+                }
+            }
+        ],
+        "type": "BlobEventsTrigger",
+        "typeProperties": {
+            "blobPathBeginsWith": "/invprcontainer01/blobs/tmp/x_mkilm_invpr_voting_rights_ratio/",
+            "ignoreEmptyBlobs": false,
+            "scope": "/subscriptions/cd64c67b-2ac8-4cfa-a4d4-5aa4e26cbaf2/resourceGroups/SCP-JPE-DEV01-RG/providers/Microsoft.Storage/storageAccounts/scpblobdev01",
+            "events": [
+                "Microsoft.Storage.BlobDeleted"
+            ]
+        }
+    }
+}

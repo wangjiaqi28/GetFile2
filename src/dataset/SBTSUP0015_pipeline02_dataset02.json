@@ -1,0 +1,48 @@
+{
+    "name": "SBTSUP0015_pipeline02_dataset02",
+    "properties": {
+        "description": "提供ファイルを定義するデータセット",
+        "linkedServiceName": {
+            "referenceName": "SCP_1_ADFLinkedServices_Blob002_Dev",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "dir": {
+                "type": "string"
+            },
+            "file_name": {
+                "type": "string"
+            },
+            "file_first_row_header": {
+                "type": "bool"
+            }
+        },
+        "annotations": [],
+        "type": "DelimitedText",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobStorageLocation",
+                "fileName": {
+                    "value": "@dataset().file_name",
+                    "type": "Expression"
+                },
+                "folderPath": {
+                    "value": "@dataset().dir",
+                    "type": "Expression"
+                },
+                "container": "mbkcorecontainer01"
+            },
+            "columnDelimiter": ",",
+            "rowDelimiter": "\n",
+            "encodingName": "UTF-8 without BOM",
+            "escapeChar": "\"",
+            "firstRowAsHeader": {
+                "value": "@dataset().file_first_row_header",
+                "type": "Expression"
+            },
+            "quoteChar": "\""
+        },
+        "schema": []
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

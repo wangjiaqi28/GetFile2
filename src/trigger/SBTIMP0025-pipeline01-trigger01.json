@@ -1,0 +1,25 @@
+{
+    "name": "SBTIMP0025-pipeline01-trigger01",
+    "properties": {
+        "description": "データ交換基盤取込パイプラインを起動するためのスケジュールトリガー",
+        "annotations": [],
+        "runtimeState": "Stopped",
+        "pipelines": [
+            {
+                "pipelineReference": {
+                    "referenceName": "SBTIMP0025-pipeline01",
+                    "type": "PipelineReference"
+                }
+            }
+        ],
+        "type": "ScheduleTrigger",
+        "typeProperties": {
+            "recurrence": {
+                "frequency": "Day",
+                "interval": 1,
+                "startTime": "2025-02-28T01:00:00",
+                "timeZone": "Tokyo Standard Time"
+            }
+        }
+    }
+}

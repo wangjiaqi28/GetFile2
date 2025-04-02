@@ -1,0 +1,144 @@
+{
+    "name": "SBTSUP0025-pipeline01",
+    "properties": {
+        "description": "移送パイプライン",
+        "activities": [
+            {
+                "name": "SBTSUP0025-pipeline01-copy01",
+                "description": "取込側基軸ファイルを提供側基軸ファイル領域に格納するアクティビティ",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "AzureBlobStorageReadSettings",
+                            "recursive": true,
+                            "enablePartitionDiscovery": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobStorageWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".txt"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "SBTSUP0025_pipeline01_dataset01",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "core_dir": {
+                                "value": "@pipeline().parameters.core_dir",
+                                "type": "Expression"
+                            },
+                            "core_file_name": "@pipeline().parameters.core_file_name"
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "SBTSUP0025_pipeline01_dataset02",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "core_dir": {
+                                "value": "@pipeline().parameters.core_dir",
+                                "type": "Expression"
+                            },
+                            "core_file_name": {
+                                "value": "@pipeline().parameters.core_file_name",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "SBTSUP0025-pipeline01-excutePipeline01",
+                "description": "提供側変換パイプラインを呼び出すアクティビティ",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "SBTSUP0025-pipeline01-copy01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "SBTSUP0025-pipeline02",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                        "core_dir": {
+                            "value": "@pipeline().parameters.core_dir",
+                            "type": "Expression"
+                        },
+                        "core_file_name": {
+                            "value": "@pipeline().parameters.core_file_name",
+                            "type": "Expression"
+                        },
+                        "del_info_file": {
+                            "value": "@pipeline().parameters.del_info_file",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            }
+        ],
+        "policy": {
+            "elapsedTimeMetric": {
+                "duration": "0.01:00:00"
+            }
+        },
+        "parameters": {
+            "core_dir": {
+                "type": "string"
+            },
+            "core_file_name": {
+                "type": "string"
+            },
+            "del_info_file": {
+                "type": "string"
+            }
+        },
+        "folder": {
+            "name": "SUP/mbkcore"
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-03-27T06:18:13Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

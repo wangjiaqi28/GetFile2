@@ -1,0 +1,39 @@
+{
+    "name": "SBTSUP0025_pipeline02_dataset02",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "SCP_1_ADFLinkedServices_Blob002_Dev",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "dir": {
+                "type": "string"
+            },
+            "file_first_row_header": {
+                "type": "bool"
+            }
+        },
+        "annotations": [],
+        "type": "DelimitedText",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobStorageLocation",
+                "folderPath": {
+                    "value": "@dataset().dir",
+                    "type": "Expression"
+                },
+                "container": "mbkcorecontainer01"
+            },
+            "columnDelimiter": ",",
+            "rowDelimiter": "\n",
+            "escapeChar": "\"",
+            "firstRowAsHeader": {
+                "value": "@dataset().file_first_row_header",
+                "type": "Expression"
+            },
+            "quoteChar": "\""
+        },
+        "schema": []
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

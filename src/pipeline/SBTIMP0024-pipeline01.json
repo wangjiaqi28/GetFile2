@@ -1,0 +1,122 @@
+{
+    "name": "SBTIMP0024-pipeline01",
+    "properties": {
+        "description": "データ交換基盤取込パイプライン",
+        "activities": [
+            {
+                "name": "SBTIMP0024-pipeline01-azureFunction01",
+                "description": "データ交換基盤上のファイルを取込側一時ファイル領域に格納するためのアクティビティ",
+                "type": "AzureFunctionActivity",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "functionName": "get_sftp",
+                    "headers": {
+                        "sftp_host": {
+                            "value": "@pipeline().parameters.sftp_host",
+                            "type": "Expression"
+                        },
+                        "sftp_port": {
+                            "value": "@pipeline().parameters.sftp_port",
+                            "type": "Expression"
+                        },
+                        "sftp_user_name": {
+                            "value": "@pipeline().parameters.sftp_user_name",
+                            "type": "Expression"
+                        },
+                        "sftp_dir": {
+                            "value": "@pipeline().parameters.sftp_dir",
+                            "type": "Expression"
+                        },
+                        "sftp_file_name": {
+                            "value": "@pipeline().parameters.sftp_file_name",
+                            "type": "Expression"
+                        },
+                        "sftp_secret": {
+                            "value": "@pipeline().parameters.sftp_secret",
+                            "type": "Expression"
+                        },
+                        "sftp_key_vault_name": {
+                            "value": "@pipeline().parameters.sftp_key_vault_name",
+                            "type": "Expression"
+                        },
+                        "tmp_blob_name": {
+                            "value": "@pipeline().parameters.tmp_blob_name",
+                            "type": "Expression"
+                        },
+                        "tmp_container": {
+                            "value": "@pipeline().parameters.tmp_container",
+                            "type": "Expression"
+                        },
+                        "tmp_dir": {
+                            "value": "@pipeline().parameters.tmp_dir",
+                            "type": "Expression"
+                        }
+                    },
+                    "method": "GET"
+                },
+                "linkedServiceName": {
+                    "referenceName": "SCP_1_ADFLinkedServices_Functions001_Dev",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "policy": {
+            "elapsedTimeMetric": {
+                "duration": "0.01:00:00"
+            }
+        },
+        "parameters": {
+            "sftp_host": {
+                "type": "string"
+            },
+            "sftp_port": {
+                "type": "string"
+            },
+            "sftp_user_name": {
+                "type": "string"
+            },
+            "sftp_dir": {
+                "type": "string",
+                "defaultValue": "tkac/cx/daily/cxftp0001"
+            },
+            "sftp_file_name": {
+                "type": "string",
+                "defaultValue": "CXFT000101"
+            },
+            "sftp_secret": {
+                "type": "string",
+                "defaultValue": "mirai-sftp-pw"
+            },
+            "sftp_key_vault_name": {
+                "type": "string",
+                "defaultValue": "SCP-1-KeyVault-001-Dev"
+            },
+            "tmp_blob_name": {
+                "type": "string",
+                "defaultValue": "scpblobdev01"
+            },
+            "tmp_container": {
+                "type": "string",
+                "defaultValue": "miraicontainer01"
+            },
+            "tmp_dir": {
+                "type": "string",
+                "defaultValue": "tmp"
+            }
+        },
+        "folder": {
+            "name": "IMP/mirai"
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-03-27T05:30:03Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

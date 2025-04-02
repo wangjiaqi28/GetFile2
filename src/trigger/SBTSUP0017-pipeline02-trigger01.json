@@ -1,0 +1,29 @@
+{
+    "name": "SBTSUP0017-pipeline02-trigger01",
+    "properties": {
+        "description": "提供側変換パイプラインを起動するための配置トリガー",
+        "annotations": [],
+        "runtimeState": "Started",
+        "pipelines": [
+            {
+                "pipelineReference": {
+                    "referenceName": "SBTSUP0017-pipeline02",
+                    "type": "PipelineReference"
+                },
+                "parameters": {
+                    "core_dir": "@trigger().outputs.body.folderPath",
+                    "core_file_name": "@trigger().outputs.body.filename"
+                }
+            }
+        ],
+        "type": "BlobEventsTrigger",
+        "typeProperties": {
+            "blobPathBeginsWith": "/mbkcorecontainer01/blobs/core/Org005_Service/",
+            "ignoreEmptyBlobs": true,
+            "scope": "/subscriptions/cd64c67b-2ac8-4cfa-a4d4-5aa4e26cbaf2/resourceGroups/SCP-JPE-DEV01-RG/providers/Microsoft.Storage/storageAccounts/scpblobdev02",
+            "events": [
+                "Microsoft.Storage.BlobCreated"
+            ]
+        }
+    }
+}

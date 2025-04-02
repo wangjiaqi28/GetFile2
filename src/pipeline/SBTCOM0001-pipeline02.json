@@ -1,0 +1,177 @@
+{
+    "name": "SBTCOM0001-pipeline02",
+    "properties": {
+        "description": "ファイル削除パイプライン",
+        "activities": [
+            {
+                "name": "SBTCOM0001-pipeline02-lookup01",
+                "description": "削除情報ファイルの中身を読み込み",
+                "type": "Lookup",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "AzureBlobStorageReadSettings",
+                            "recursive": true,
+                            "enablePartitionDiscovery": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "dataset": {
+                        "referenceName": "SBTCOM0001_pipeline02_dataset03",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "container": {
+                                "value": "@pipeline().parameters.container",
+                                "type": "Expression"
+                            },
+                            "dir": {
+                                "value": "@pipeline().parameters.del_file_dir",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    "firstRowOnly": false
+                }
+            },
+            {
+                "name": "SBTCOM0001-pipeline02-foreach01",
+                "description": "アイテムNo1で取得した削除対象ファイルリストをループする",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "SBTCOM0001-pipeline02-lookup01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('SBTCOM0001-pipeline02-lookup01').output.value",
+                        "type": "Expression"
+                    },
+                    "isSequential": true,
+                    "activities": [
+                        {
+                            "name": "SBTCOM0001-pipeline02-ifCondition01",
+                            "description": "下記条件に満たす場合True,それ以外の場合False\n・削除対象ファイルが取込側ストレジアカウントに保存されている場合",
+                            "type": "IfCondition",
+                            "dependsOn": [],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "expression": {
+                                    "value": "@equals(substring(item().Prop_0, 0, 4), 'imp:')",
+                                    "type": "Expression"
+                                },
+                                "ifFalseActivities": [
+                                    {
+                                        "name": "SBTCOM0001-pipeline02-delete02",
+                                        "description": "提供側ストレジアカウント配下のファイルを削除するアクティビティ",
+                                        "type": "Delete",
+                                        "dependsOn": [],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 1,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "dataset": {
+                                                "referenceName": "SBTCOM0001_pipeline02_dataset02",
+                                                "type": "DatasetReference",
+                                                "parameters": {
+                                                    "container": {
+                                                        "value": "@substring(item().Prop_0, 4, sub(indexOf(item().Prop_0, '/'),4))",
+                                                        "type": "Expression"
+                                                    },
+                                                    "dir": "@substring(item().Prop_0, add(indexOf(item().Prop_0, '/'),1), sub(sub(lastIndexOf(item().Prop_0, '/'),indexOf(item().Prop_0, '/')),1))",
+                                                    "file_name": "@substring(item().Prop_0, add(lastIndexOf(item().Prop_0, '/'),1), sub(sub(length(item().Prop_0),lastIndexOf(item().Prop_0, '/')),1))"
+                                                }
+                                            },
+                                            "enableLogging": false,
+                                            "storeSettings": {
+                                                "type": "AzureBlobStorageReadSettings",
+                                                "recursive": true,
+                                                "enablePartitionDiscovery": false
+                                            }
+                                        }
+                                    }
+                                ],
+                                "ifTrueActivities": [
+                                    {
+                                        "name": "SBTCOM0001-pipeline02-delete01",
+                                        "description": "取込側ストレジアカウント配下のファイルを削除するアクティビティ",
+                                        "type": "Delete",
+                                        "dependsOn": [],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 1,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "dataset": {
+                                                "referenceName": "SBTCOM0001_pipeline02_dataset01",
+                                                "type": "DatasetReference",
+                                                "parameters": {
+                                                    "container": {
+                                                        "value": "@substring(item().Prop_0, 4, sub(indexOf(item().Prop_0, '/'),4))",
+                                                        "type": "Expression"
+                                                    },
+                                                    "dir": "@substring(item().Prop_0, add(indexOf(item().Prop_0, '/'),1), sub(sub(lastIndexOf(item().Prop_0, '/'),indexOf(item().Prop_0, '/')),1))",
+                                                    "file_name": {
+                                                        "value": "@substring(item().Prop_0, add(lastIndexOf(item().Prop_0, '/'),1), sub(sub(length(item().Prop_0),lastIndexOf(item().Prop_0, '/')),1))",
+                                                        "type": "Expression"
+                                                    }
+                                                }
+                                            },
+                                            "enableLogging": false,
+                                            "storeSettings": {
+                                                "type": "AzureBlobStorageReadSettings",
+                                                "recursive": true,
+                                                "enablePartitionDiscovery": false
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "policy": {
+            "elapsedTimeMetric": {
+                "duration": "0.01:00:00"
+            }
+        },
+        "parameters": {
+            "del_file_dir": {
+                "type": "string"
+            },
+            "container": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-03-28T03:08:15Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,59 @@
+{
+    "name": "SBTSUP0025_pipeline02_dataFlow01",
+    "properties": {
+        "description": "提供ファイルを出力するアクティビティ",
+        "type": "MappingDataFlow",
+        "typeProperties": {
+            "sources": [
+                {
+                    "dataset": {
+                        "referenceName": "SBTSUP0025_pipeline02_dataset01",
+                        "type": "DatasetReference"
+                    },
+                    "name": "SBTSUP0025Pipeline02DataFlow01Source01"
+                }
+            ],
+            "sinks": [
+                {
+                    "dataset": {
+                        "referenceName": "SBTSUP0025_pipeline02_dataset02",
+                        "type": "DatasetReference"
+                    },
+                    "name": "SBTSUP0025Pipeline02DataFlow01Sink01"
+                },
+                {
+                    "dataset": {
+                        "referenceName": "SBTSUP0025_pipeline02_dataset02",
+                        "type": "DatasetReference"
+                    },
+                    "name": "SBTSUP0025Pipeline02DataFlow01Sink02"
+                }
+            ],
+            "transformations": [],
+            "scriptLines": [
+                "parameters{",
+                "     sup_file_name_new as string,",
+                "     sup_file_name_old as string",
+                "}",
+                "source(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     ignoreNoFilesFound: false,",
+                "     skipLines: 1) ~> SBTSUP0025Pipeline02DataFlow01Source01",
+                "SBTSUP0025Pipeline02DataFlow01Source01 sink(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     partitionFileNames:[($sup_file_name_new)],",
+                "     skipDuplicateMapInputs: true,",
+                "     skipDuplicateMapOutputs: true,",
+                "     header: (array(concat(\"PARTNR\",\",SPRAS\",\",ZAEPAANA_ja\",\",ZAEPAAKNA\",\",ZAEPAANA_en\",\",ZAEPANA1_ja\",\",ZAEPANA2_ja\",\",ZAEPANA1_en\",\",ZAEPANA2_en\",\",ZAEPAKNA\",\",LAND1\",\",ZAEPAAD1_ja\",\",ZAEPAAD2_ja\",\",ZAEPAAD3_ja\",\",ZAEPAKAD\",\",ZAEPAAD1_en\",\",ZAEPAAD2_en\",\",ZAEPAAD3_en\",\",ZAEPAAD4\",\",PSTLZ\",\",TELF1\",\",BLAND\",\",DATE_TO\",\",KOINH\",\",BKONT\",\",ZAEPADB\",\",ZAEPATSR\",\",ZAEPATDB\",\",URL\",\",SORTL\",\",ZAEPAIE\",\",ZAEPATRE\",\",ZAEPABRF\",\",ZAEPADEN\",\",ZAEPAHEP\",\",ZAETSBT\",\",SWIFT\",\",ZAEGFLG\",\",ZAEBAMS\",\",ZAEPADI\",\",ZAEPAAP\",\",ZAEPASEC\",\",ZAEPAGR1\",\",ZAEPAGR2\",\",ZAEPAGR3\",\",ZAEPARE\",\",ZAEPAPIO\",\",LZONE\",\",ZAEPAORG\",\",ZAEPAAFME\",\",ZAEPAITI\",\",ZAEPAINVE\",\",ZAEPARESU\",\",ZAEPARESP\",\",ZAEPASEAC\",\",ZAEPACAAC\",\",ZAEPAWAOL\",\",ZAEPACONV\",\",ZAEPAMAC\",\",ZAEPAHE\",\",ZAEPAJU\",\",ZAEPACOMP\",\",ZAEPACOTR\",\",ZAEPACOLA\",\",ZAEPACOLL\",\",ZAEPAEQ\",\",ZAEPATA\",\",ZAEPAST\",\",ZAEPASITU\",\",ZAEPAHAV\",\",ZAEPANECO\",\",ZAEPACAEQ\",\",ZAEKTSR\",\",ZAEKODB\",\",ERDATE\",\",ERUSNM\",\",EDDATE\",\",EDUSNM\",\",LVORM\",\",ZAEIFNW\"))),",
+                "     partitionBy('hash', 1)) ~> SBTSUP0025Pipeline02DataFlow01Sink01",
+                "SBTSUP0025Pipeline02DataFlow01Source01 sink(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     partitionFileNames:[($sup_file_name_old)],",
+                "     skipDuplicateMapInputs: true,",
+                "     skipDuplicateMapOutputs: true,",
+                "     header: (array(concat(\"PARTNR\",\",SPRAS\",\",ZAEPAANA_ja\",\",ZAEPAAKNA\",\",ZAEPAANA_en\",\",ZAEPANA1_ja\",\",ZAEPANA2_ja\",\",ZAEPANA1_en\",\",ZAEPANA2_en\",\",ZAEPAKNA\",\",LAND1\",\",ZAEPAAD1_ja\",\",ZAEPAAD2_ja\",\",ZAEPAAD3_ja\",\",ZAEPAKAD\",\",ZAEPAAD1_en\",\",ZAEPAAD2_en\",\",ZAEPAAD3_en\",\",ZAEPAAD4\",\",PSTLZ\",\",TELF1\",\",BLAND\",\",DATE_TO\",\",KOINH\",\",BKONT\",\",ZAEPADB\",\",ZAEPATSR\",\",ZAEPATDB\",\",URL\",\",SORTL\",\",ZAEPAIE\",\",ZAEPATRE\",\",ZAEPABRF\",\",ZAEPADEN\",\",ZAEPAHEP\",\",ZAETSBT\",\",SWIFT\",\",ZAEGFLG\",\",ZAEBAMS\",\",ZAEPADI\",\",ZAEPAAP\",\",ZAEPASEC\",\",ZAEPAGR1\",\",ZAEPAGR2\",\",ZAEPAGR3\",\",ZAEPARE\",\",ZAEPAPIO\",\",LZONE\",\",ZAEPAORG\",\",ZAEPAAFME\",\",ZAEPAITI\",\",ZAEPAINVE\",\",ZAEPARESU\",\",ZAEPARESP\",\",ZAEPASEAC\",\",ZAEPACAAC\",\",ZAEPAWAOL\",\",ZAEPACONV\",\",ZAEPAMAC\",\",ZAEPAHE\",\",ZAEPAJU\",\",ZAEPACOMP\",\",ZAEPACOTR\",\",ZAEPACOLA\",\",ZAEPACOLL\",\",ZAEPAEQ\",\",ZAEPATA\",\",ZAEPAST\",\",ZAEPASITU\",\",ZAEPAHAV\",\",ZAEPANECO\",\",ZAEPACAEQ\",\",ZAEKTSR\",\",ZAEKODB\",\",ERDATE\",\",ERUSNM\",\",EDDATE\",\",EDUSNM\",\",LVORM\",\",ZAEIFNW\"))),",
+                "     partitionBy('hash', 1)) ~> SBTSUP0025Pipeline02DataFlow01Sink02"
+            ]
+        }
+    }
+}

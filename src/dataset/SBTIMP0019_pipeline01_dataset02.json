@@ -1,0 +1,42 @@
+{
+    "name": "SBTIMP0019_pipeline01_dataset02",
+    "properties": {
+        "description": "基軸ファイルを定義するデータセット",
+        "linkedServiceName": {
+            "referenceName": "SCP_1_ADFLinkedServices_Blob001_Dev",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "dir": {
+                "type": "string"
+            },
+            "file_name": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "DelimitedText",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobStorageLocation",
+                "fileName": {
+                    "value": "@dataset().file_name",
+                    "type": "Expression"
+                },
+                "folderPath": {
+                    "value": "@dataset().dir",
+                    "type": "Expression"
+                },
+                "container": "bloomcontainer01"
+            },
+            "columnDelimiter": ",",
+            "rowDelimiter": "\n",
+            "encodingName": "UTF-8 without BOM",
+            "escapeChar": "\"",
+            "firstRowAsHeader": true,
+            "quoteChar": "\""
+        },
+        "schema": []
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

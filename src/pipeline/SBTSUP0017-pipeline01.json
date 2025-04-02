@@ -1,0 +1,94 @@
+{
+    "name": "SBTSUP0017-pipeline01",
+    "properties": {
+        "description": "移送パイプライン",
+        "activities": [
+            {
+                "name": "SBTSUP0017-pipeline01-copy01",
+                "description": "取込側基軸ファイルを提供側基軸ファイル領域に格納するアクティビティ",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "AzureBlobStorageReadSettings",
+                            "recursive": true,
+                            "enablePartitionDiscovery": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobStorageWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".txt"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "SBTSUP0017_pipeline01_dataset01",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "core_dir": "@replace(pipeline().parameters.core_dir, 'bloomcontainer01/','')",
+                            "core_file_name": "@pipeline().parameters.core_file_name"
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "SBTSUP0017_pipeline01_dataset02",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "core_dir": "@replace(pipeline().parameters.core_dir, 'bloomcontainer01/','')",
+                            "core_file_name": "@pipeline().parameters.core_file_name"
+                        }
+                    }
+                ]
+            }
+        ],
+        "policy": {
+            "elapsedTimeMetric": {
+                "duration": "0.01:00:00"
+            }
+        },
+        "parameters": {
+            "core_dir": {
+                "type": "string"
+            },
+            "core_file_name": {
+                "type": "string"
+            }
+        },
+        "folder": {
+            "name": "SUP/mbkcore"
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-03-17T06:18:23Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

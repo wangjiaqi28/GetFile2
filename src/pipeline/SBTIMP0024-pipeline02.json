@@ -1,0 +1,531 @@
+{
+    "name": "SBTIMP0024-pipeline02",
+    "properties": {
+        "activities": [
+            {
+                "name": "SBTIMP0024-pipeline02-getMetadata01",
+                "description": "全量ファイルの一覧を取得するアクティビティ",
+                "type": "GetMetadata",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataset": {
+                        "referenceName": "SBTIMP0024_pipeline02_dataset01",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "dir": "@pipeline().parameters.core_all_dir",
+                            "file_name": "*"
+                        }
+                    },
+                    "fieldList": [
+                        "childItems"
+                    ],
+                    "storeSettings": {
+                        "type": "AzureBlobStorageReadSettings",
+                        "recursive": true,
+                        "modifiedDatetimeStart": {
+                            "value": "@getPastTime(2, 'Month')",
+                            "type": "Expression"
+                        },
+                        "enablePartitionDiscovery": false
+                    },
+                    "formatSettings": {
+                        "type": "DelimitedTextReadSettings"
+                    }
+                }
+            },
+            {
+                "name": "SBTIMP0024-pipeline02-foreach01",
+                "description": "全量ファイル一覧の中から最新のファイルを取得するアクティビティ",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "SBTIMP0024-pipeline02-getMetadata01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('SBTIMP0024-pipeline02-getMetadata01').output.childItems",
+                        "type": "Expression"
+                    },
+                    "isSequential": true,
+                    "activities": [
+                        {
+                            "name": "SBTIMP0024-pipeline02-ifCondition01",
+                            "description": "下記①と②両方満たす場合にTrue,それ以外の場合Falseを返すアクティビティ\n①ファイル名に\"_SC\"の文字列が存在する\n②対象ファイルのYYYYMMDDHHMMSSが前回ループ対象のファイルのYYYYMMDDHHMMSSと同等かそれより最新の場合",
+                            "type": "IfCondition",
+                            "dependsOn": [],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "expression": {
+                                    "value": "@or(empty(variables('last_file_name')),\nand( \n    contains(\n        item().name, '_SC'),\n        greaterOrEquals(\n            replace(substring(item().name,add(lastIndexOf(item().name, '_SC'), 3), 15), '-', ''), \n            replace(substring(variables('last_file_name'),add(lastIndexOf(variables('last_file_name'), '_SC'), 3), 15), '-', '')\n            )\n))",
+                                    "type": "Expression"
+                                },
+                                "ifTrueActivities": [
+                                    {
+                                        "name": "SBTIMP0024-pipeline02-setVariable01",
+                                        "description": "アイテムNo4がTrueの場合ファイル名を変数last_file_nameに設定する",
+                                        "type": "SetVariable",
+                                        "dependsOn": [],
+                                        "policy": {
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "variableName": "last_file_name",
+                                            "value": {
+                                                "value": "@item().name",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "SBTIMP0024-pipeline02-callDataFlow01",
+                "description": "差分ファイルと最新の全量ファイルから、「全量基軸ファイル（日付あり）」「差分基軸ファイル」を出力するアクティビティ",
+                "type": "ExecuteDataFlow",
+                "dependsOn": [
+                    {
+                        "activity": "SBTIMP0024-pipeline02-azureFunction01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataflow": {
+                        "referenceName": "SBTIMP0024_pipeline02_dataFlow01",
+                        "type": "DataFlowReference",
+                        "parameters": {
+                            "core_diff_file_name": {
+                                "value": "'@{variables('core_diff_file_name')}'",
+                                "type": "Expression"
+                            },
+                            "core_all_file_name": {
+                                "value": "'@{variables('core_all_file_name')}'",
+                                "type": "Expression"
+                            }
+                        },
+                        "datasetParameters": {
+                            "SBTIMP0024Pipeline02DataFlow01Source01": {
+                                "dir": "@pipeline().parameters.core_diff_dir",
+                                "file_name": "@pipeline().parameters.work_file_name",
+                                "file_column_delimiter": {
+                                    "value": "@pipeline().parameters.tmp_file_column_delimiter",
+                                    "type": "Expression"
+                                },
+                                "file_encoding": {
+                                    "value": "@pipeline().parameters.tmp_file_encoding",
+                                    "type": "Expression"
+                                },
+                                "file_quote_char": {
+                                    "value": "@pipeline().parameters.tmp_file_quote_char",
+                                    "type": "Expression"
+                                },
+                                "file_escape_char": {
+                                    "value": "@pipeline().parameters.tmp_file_escape_char",
+                                    "type": "Expression"
+                                },
+                                "file_first_row_header": {
+                                    "value": "@pipeline().parameters.tmp_file_first_row_header",
+                                    "type": "Expression"
+                                },
+                                "null_value": {
+                                    "value": "@pipeline().parameters.tmp_null_value",
+                                    "type": "Expression"
+                                }
+                            },
+                            "SBTIMP0024Pipeline02DataFlow01Source02": {
+                                "dir": "@pipeline().parameters.core_all_dir",
+                                "file_name": "@variables('last_file_name')"
+                            },
+                            "SBTIMP0024Pipeline02DataFlow01Sink01": {
+                                "dir": {
+                                    "value": "@pipeline().parameters.core_diff_dir",
+                                    "type": "Expression"
+                                },
+                                "file_name": "*"
+                            },
+                            "SBTIMP0024Pipeline02DataFlow01Sink02": {
+                                "dir": {
+                                    "value": "@pipeline().parameters.core_all_dir",
+                                    "type": "Expression"
+                                },
+                                "file_name": "*"
+                            }
+                        }
+                    },
+                    "compute": {
+                        "coreCount": 8,
+                        "computeType": "General"
+                    },
+                    "traceLevel": "Fine"
+                }
+            },
+            {
+                "name": "SBTIMP0024-pipeline02-web01",
+                "description": "削除情報ファイルに一時ファイルと基軸ファイルの情報を設定するアクティビティ",
+                "type": "WebActivity",
+                "dependsOn": [
+                    {
+                        "activity": "SBTIMP0024-pipeline02-callDataFlow01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "method": "PUT",
+                    "headers": {
+                        "x-ms-version": "2024-11-04",
+                        "x-ms-blob-type": "BlockBlob",
+                        "x-ms-meta-tmp": {
+                            "value": "@pipeline().parameters.tmp_file_name",
+                            "type": "Expression"
+                        }
+                    },
+                    "url": {
+                        "value": "@concat('https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',pipeline().parameters.tmp_dir,'_DEL/DEL_INFO')",
+                        "type": "Expression"
+                    },
+                    "connectVia": {
+                        "referenceName": "AutoResolveIntegrationRuntime",
+                        "type": "IntegrationRuntimeReference"
+                    },
+                    "body": {
+                        "value": "@concat('imp:miraicontainer01/',pipeline().parameters.core_diff_dir,'/',variables('core_diff_file_name'),\ndecodeUriComponent('%0D%0A'),\n'imp:miraicontainer01/',pipeline().parameters.core_all_dir,'/',variables('core_all_file_name')\n)",
+                        "type": "Expression"
+                    },
+                    "authentication": {
+                        "type": "MSI",
+                        "resource": "https://storage.azure.com/"
+                    }
+                }
+            },
+            {
+                "name": "SBTIMP0024-pipeline02-excutePipeline01",
+                "description": "取引先送信ファイル（差分）提供側パイプラインを呼び出すアクティビティ",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "SBTIMP0024-pipeline02-web01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "SBTSUP0024-pipeline01",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                        "core_dir": {
+                            "value": "@pipeline().parameters.core_diff_dir",
+                            "type": "Expression"
+                        },
+                        "core_file_name": {
+                            "value": "@variables('core_diff_file_name')",
+                            "type": "Expression"
+                        },
+                        "del_info_file": {
+                            "value": "@concat('https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',pipeline().parameters.tmp_dir,'_DEL/DEL_INFO')",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "SBTIMP0024-pipeline02-excutePipeline02",
+                "description": "取引先送信ファイル（全件）提供側パイプラインを呼び出すアクティビティ",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "SBTIMP0024-pipeline02-excutePipeline01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "SBTSUP0025-pipeline01",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                        "core_dir": {
+                            "value": "@pipeline().parameters.core_all_dir",
+                            "type": "Expression"
+                        },
+                        "core_file_name": {
+                            "value": "@variables('core_all_file_name')",
+                            "type": "Expression"
+                        },
+                        "del_info_file": {
+                            "value": "@concat('https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',pipeline().parameters.tmp_dir,'_DEL/DEL_INFO')",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "SBTIMP0024-pipeline02-azureFunction01",
+                "description": "データ交換基盤上の固定長一時ファイルを可変長ファイルに変換するためのアクティビティ",
+                "type": "AzureFunctionActivity",
+                "dependsOn": [
+                    {
+                        "activity": "SBTIMP0024-pipeline02-foreach01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "functionName": "convert_fixed_length_to_csv",
+                    "body": {
+                        "value": "@pipeline().parameters.column_widths",
+                        "type": "Expression"
+                    },
+                    "headers": {
+                        "account_name": {
+                            "value": "@pipeline().parameters.blob_name",
+                            "type": "Expression"
+                        },
+                        "source_file_dir": {
+                            "value": "@pipeline().parameters.tmp_dir",
+                            "type": "Expression"
+                        },
+                        "source_file_name": {
+                            "value": "@pipeline().parameters.tmp_file_name",
+                            "type": "Expression"
+                        },
+                        "work_file_dir": {
+                            "value": "@pipeline().parameters.core_diff_dir",
+                            "type": "Expression"
+                        },
+                        "work_file_name": {
+                            "value": "@pipeline().parameters.work_file_name",
+                            "type": "Expression"
+                        }
+                    },
+                    "method": "POST"
+                },
+                "linkedServiceName": {
+                    "referenceName": "SCP_1_ADFLinkedServices_Functions001_Dev",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "policy": {
+            "elapsedTimeMetric": {
+                "duration": "0.01:00:00"
+            }
+        },
+        "parameters": {
+            "tmp_dir": {
+                "type": "string"
+            },
+            "tmp_file_name": {
+                "type": "string"
+            },
+            "tmp_file_column_delimiter": {
+                "type": "string",
+                "defaultValue": ","
+            },
+            "tmp_file_encoding": {
+                "type": "string",
+                "defaultValue": "SHIFT-JIS"
+            },
+            "tmp_file_quote_char": {
+                "type": "string"
+            },
+            "tmp_file_escape_char": {
+                "type": "string"
+            },
+            "tmp_file_first_row_header": {
+                "type": "bool",
+                "defaultValue": false
+            },
+            "tmp_null_value": {
+                "type": "string"
+            },
+            "core_diff_dir": {
+                "type": "string",
+                "defaultValue": "core/CXFT000101"
+            },
+            "core_all_dir": {
+                "type": "string",
+                "defaultValue": "core/CXFT008101"
+            },
+            "core_all_file_name": {
+                "type": "string",
+                "defaultValue": "CXFT008101"
+            },
+            "blob_name": {
+                "type": "string",
+                "defaultValue": "scpblobdev01"
+            },
+            "work_file_name": {
+                "type": "string",
+                "defaultValue": "CXFT000101_WK.csv"
+            },
+            "column_widths": {
+                "type": "string",
+                "defaultValue": {
+                    "column_widths": [
+                        10,
+                        1,
+                        16,
+                        15,
+                        16,
+                        35,
+                        35,
+                        35,
+                        35,
+                        60,
+                        3,
+                        35,
+                        35,
+                        35,
+                        80,
+                        35,
+                        35,
+                        35,
+                        35,
+                        10,
+                        16,
+                        3,
+                        8,
+                        4,
+                        4,
+                        11,
+                        11,
+                        11,
+                        132,
+                        10,
+                        1,
+                        1,
+                        1,
+                        1,
+                        10,
+                        2,
+                        11,
+                        1,
+                        1,
+                        1,
+                        4,
+                        16,
+                        4,
+                        4,
+                        4,
+                        40,
+                        8,
+                        10,
+                        1,
+                        10,
+                        8,
+                        1,
+                        1,
+                        6,
+                        2,
+                        1,
+                        5,
+                        3,
+                        1,
+                        10,
+                        10,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        8,
+                        12,
+                        8,
+                        12,
+                        1,
+                        1
+                    ]
+                }
+            }
+        },
+        "variables": {
+            "last_file_name": {
+                "type": "String"
+            },
+            "core_diff_file_name": {
+                "type": "String",
+                "defaultValue": "@concat(if(equals(lastIndexOf(pipeline().parameters.tmp_file_name, '.'), -1) , pipeline().parameters.tmp_file_name,substring(pipeline().parameters.tmp_file_name, 0, lastIndexOf(pipeline().parameters.tmp_file_name, '.'))) ,'_SC',formatDateTime(addhours(utcNow(),9),'yyyyMMdd-HHmmss'),'.csv')"
+            },
+            "core_all_file_name": {
+                "type": "String",
+                "defaultValue": "@concat(if(equals(lastIndexOf(pipeline().parameters.core_all_file_name, '.'), -1) , pipeline().parameters.core_all_file_name,substring(pipeline().parameters.core_all_file_name, 0, lastIndexOf(pipeline().parameters.core_all_file_name, '.'))) ,'_SC',formatDateTime(addhours(utcNow(),9),'yyyyMMdd-HHmmss'),'.csv')"
+            }
+        },
+        "folder": {
+            "name": "IMP/mirai"
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-03-27T05:30:03Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
