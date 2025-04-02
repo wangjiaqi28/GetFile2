@@ -1,41 +1,41 @@
 {
-    "name": "SBTCOM0001_pipeline02_dataset02",
-    "properties": {
-        "description": "提供側ストレジアカウントを定義するデータセット",
-        "linkedServiceName": {
-            "referenceName": "SCP_1_ADFLinkedServices_Blob002_Dev",
-            "type": "LinkedServiceReference"
-        },
-        "parameters": {
-            "container": {
-                "type": "string"
-            },
-            "dir": {
-                "type": "string"
-            },
-            "file_name": {
-                "type": "string"
-            }
-        },
-        "annotations": [],
-        "type": "Binary",
-        "typeProperties": {
-            "location": {
-                "type": "AzureBlobStorageLocation",
-                "fileName": {
-                    "value": "@dataset().file_name",
-                    "type": "Expression"
-                },
-                "folderPath": {
-                    "value": "@dataset().dir",
-                    "type": "Expression"
-                },
-                "container": {
-                    "value": "@dataset().container",
-                    "type": "Expression"
-                }
-            }
-        }
-    },
-    "type": "Microsoft.DataFactory/factories/datasets"
+	"name": "SBTCOM0001_pipeline02_dataset02",
+	"properties": {
+		"description": "提供側ストレジアカウントを定義するデータセット",
+		"linkedServiceName": {
+			"referenceName": "SCP_1_ADFLinkedServices_Blob002_Dev",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"container": {
+				"type": "string"
+			},
+			"dir": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().dir",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

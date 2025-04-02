@@ -1,39 +1,39 @@
 {
-    "name": "SBTSUP0024_pipeline02_dataset01",
-    "properties": {
-        "linkedServiceName": {
-            "referenceName": "SCP_1_ADFLinkedServices_Blob002_Dev",
-            "type": "LinkedServiceReference"
-        },
-        "parameters": {
-            "dir": {
-                "type": "string"
-            },
-            "file_name": {
-                "type": "string"
-            }
-        },
-        "annotations": [],
-        "type": "DelimitedText",
-        "typeProperties": {
-            "location": {
-                "type": "AzureBlobStorageLocation",
-                "fileName": {
-                    "value": "@dataset().file_name",
-                    "type": "Expression"
-                },
-                "folderPath": {
-                    "value": "@dataset().dir",
-                    "type": "Expression"
-                },
-                "container": "mbkcorecontainer01"
-            },
-            "columnDelimiter": ",",
-            "escapeChar": "\"",
-            "firstRowAsHeader": false,
-            "quoteChar": "\""
-        },
-        "schema": []
-    },
-    "type": "Microsoft.DataFactory/factories/datasets"
+	"name": "SBTSUP0024_pipeline02_dataset01",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SCP_1_ADFLinkedServices_Blob002_Dev",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dir": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().dir",
+					"type": "Expression"
+				},
+				"container": "mbkcorecontainer01"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\"",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

@@ -1,194 +1,194 @@
 {
-    "name": "SBTSUP0017-pipeline02",
-    "properties": {
-        "description": "提供側変換パイプライン",
-        "activities": [
-            {
-                "name": "SBTSUP0017-pipeline02-copy01",
-                "description": "提供側基軸ファイルを変換し提供ファイル領域に格納するアクティビティ",
-                "type": "Copy",
-                "dependsOn": [],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "source": {
-                        "type": "DelimitedTextSource",
-                        "storeSettings": {
-                            "type": "AzureBlobStorageReadSettings",
-                            "recursive": true,
-                            "enablePartitionDiscovery": false
-                        },
-                        "formatSettings": {
-                            "type": "DelimitedTextReadSettings"
-                        }
-                    },
-                    "sink": {
-                        "type": "DelimitedTextSink",
-                        "storeSettings": {
-                            "type": "AzureBlobStorageWriteSettings"
-                        },
-                        "formatSettings": {
-                            "type": "DelimitedTextWriteSettings",
-                            "quoteAllText": true,
-                            "fileExtension": ".txt"
-                        }
-                    },
-                    "enableStaging": false,
-                    "translator": {
-                        "type": "TabularTranslator",
-                        "typeConversion": true,
-                        "typeConversionSettings": {
-                            "allowDataTruncation": true,
-                            "treatBooleanAsNumber": false
-                        }
-                    }
-                },
-                "inputs": [
-                    {
-                        "referenceName": "SBTSUP0017_pipeline02_dataset01",
-                        "type": "DatasetReference",
-                        "parameters": {
-                            "dir": "@replace(pipeline().parameters.core_dir, 'mbkcorecontainer01/','')",
-                            "file_name": "@pipeline().parameters.core_file_name"
-                        }
-                    }
-                ],
-                "outputs": [
-                    {
-                        "referenceName": "SBTSUP0017_pipeline02_dataset02",
-                        "type": "DatasetReference",
-                        "parameters": {
-                            "dir": "@pipeline().parameters.sup_dir",
-                            "file_name": "@pipeline().parameters.core_file_name",
-                            "file_first_row_header": "@pipeline().parameters.sup_file_first_row_header"
-                        }
-                    }
-                ]
-            },
-            {
-                "name": "SBTSUP0017-pipeline02-web01",
-                "description": "削除情報ファイル内容を取得するアクティビティ",
-                "type": "WebActivity",
-                "dependsOn": [
-                    {
-                        "activity": "SBTSUP0017-pipeline02-copy01",
-                        "dependencyConditions": [
-                            "Succeeded"
-                        ]
-                    }
-                ],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "method": "GET",
-                    "headers": {
-                        "x-ms-version": "2024-11-04"
-                    },
-                    "url": {
-                        "value": "@concat(\n'https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',\nreplace(pipeline().parameters.core_dir,'mbkcorecontainer01/core','bloomcontainer01/tmp'),\n'_DEL/DEL_INFO'\n)",
-                        "type": "Expression"
-                    },
-                    "connectVia": {
-                        "referenceName": "AutoResolveIntegrationRuntime",
-                        "type": "IntegrationRuntimeReference"
-                    },
-                    "authentication": {
-                        "type": "MSI",
-                        "resource": "https://storage.azure.com/"
-                    }
-                }
-            },
-            {
-                "name": "SBTSUP0017-pipeline02-web02",
-                "description": "削除情報ファイルに提供ファイルの情報を設定するアクティビティ",
-                "type": "WebActivity",
-                "dependsOn": [
-                    {
-                        "activity": "SBTSUP0017-pipeline02-web01",
-                        "dependencyConditions": [
-                            "Succeeded"
-                        ]
-                    }
-                ],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "method": "PUT",
-                    "headers": {
-                        "x-ms-version": "2024-11-04",
-                        "x-ms-blob-type": "BlockBlob",
-                        "x-ms-meta-tmp": {
-                            "value": "@activity('SBTSUP0017-pipeline02-web01').output.ADFWebActivityResponseHeaders['x-ms-meta-tmp']",
-                            "type": "Expression"
-                        }
-                    },
-                    "url": {
-                        "value": "@concat(\n'https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',\nreplace(pipeline().parameters.core_dir,'mbkcorecontainer01/core','bloomcontainer01/tmp'),\n'_DEL/DEL_INFO'\n)",
-                        "type": "Expression"
-                    },
-                    "connectVia": {
-                        "referenceName": "AutoResolveIntegrationRuntime",
-                        "type": "IntegrationRuntimeReference"
-                    },
-                    "body": {
-                        "value": "@concat(\nactivity('SBTSUP0017-pipeline02-web01').output.Response,\ndecodeUriComponent('%0D%0A'),\n'sup:',pipeline().parameters.core_dir,'/',pipeline().parameters.core_file_name,\ndecodeUriComponent('%0D%0A'),\n'sup:mbkcorecontainer01/',pipeline().parameters.sup_dir,'/',pipeline().parameters.core_file_name\n)",
-                        "type": "Expression"
-                    },
-                    "authentication": {
-                        "type": "MSI",
-                        "resource": "https://storage.azure.com/"
-                    }
-                }
-            }
-        ],
-        "policy": {
-            "elapsedTimeMetric": {
-                "duration": "0.01:00:00"
-            }
-        },
-        "parameters": {
-            "core_dir": {
-                "type": "string"
-            },
-            "core_file_name": {
-                "type": "string"
-            },
-            "sup_dir": {
-                "type": "string",
-                "defaultValue": "sup/Org005_Service"
-            },
-            "sup_file_first_row_header": {
-                "type": "bool",
-                "defaultValue": true
-            },
-            "blob_name": {
-                "type": "string",
-                "defaultValue": "scpblobdev01"
-            }
-        },
-        "folder": {
-            "name": "SUP/mbkcore"
-        },
-        "annotations": [],
-        "lastPublishTime": "2025-03-17T06:18:23Z"
-    },
-    "type": "Microsoft.DataFactory/factories/pipelines"
+	"name": "SBTSUP0017-pipeline02",
+	"properties": {
+		"description": "提供側変換パイプライン",
+		"activities": [
+			{
+				"name": "SBTSUP0017-pipeline02-copy01",
+				"description": "提供側基軸ファイルを変換し提供ファイル領域に格納するアクティビティ",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SBTSUP0017_pipeline02_dataset01",
+						"type": "DatasetReference",
+						"parameters": {
+							"dir": "@replace(pipeline().parameters.core_dir, 'mbkcorecontainer01/','')",
+							"file_name": "@pipeline().parameters.core_file_name"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SBTSUP0017_pipeline02_dataset02",
+						"type": "DatasetReference",
+						"parameters": {
+							"dir": "@pipeline().parameters.sup_dir",
+							"file_name": "@pipeline().parameters.core_file_name",
+							"file_first_row_header": "@pipeline().parameters.sup_file_first_row_header"
+						}
+					}
+				]
+			},
+			{
+				"name": "SBTSUP0017-pipeline02-web01",
+				"description": "削除情報ファイル内容を取得するアクティビティ",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "SBTSUP0017-pipeline02-copy01",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"headers": {
+						"x-ms-version": "2024-11-04"
+					},
+					"url": {
+						"value": "@concat(\n'https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',\nreplace(pipeline().parameters.core_dir,'mbkcorecontainer01/core','bloomcontainer01/tmp'),\n'_DEL/DEL_INFO'\n)",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://storage.azure.com/"
+					}
+				}
+			},
+			{
+				"name": "SBTSUP0017-pipeline02-web02",
+				"description": "削除情報ファイルに提供ファイルの情報を設定するアクティビティ",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "SBTSUP0017-pipeline02-web01",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "PUT",
+					"headers": {
+						"x-ms-version": "2024-11-04",
+						"x-ms-blob-type": "BlockBlob",
+						"x-ms-meta-tmp": {
+							"value": "@activity('SBTSUP0017-pipeline02-web01').output.ADFWebActivityResponseHeaders['x-ms-meta-tmp']",
+							"type": "Expression"
+						}
+					},
+					"url": {
+						"value": "@concat(\n'https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',\nreplace(pipeline().parameters.core_dir,'mbkcorecontainer01/core','bloomcontainer01/tmp'),\n'_DEL/DEL_INFO'\n)",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"body": {
+						"value": "@concat(\nactivity('SBTSUP0017-pipeline02-web01').output.Response,\ndecodeUriComponent('%0D%0A'),\n'sup:',pipeline().parameters.core_dir,'/',pipeline().parameters.core_file_name,\ndecodeUriComponent('%0D%0A'),\n'sup:mbkcorecontainer01/',pipeline().parameters.sup_dir,'/',pipeline().parameters.core_file_name\n)",
+						"type": "Expression"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://storage.azure.com/"
+					}
+				}
+			}
+		],
+		"policy": {
+			"elapsedTimeMetric": {
+				"duration": "0.01:00:00"
+			}
+		},
+		"parameters": {
+			"core_dir": {
+				"type": "string"
+			},
+			"core_file_name": {
+				"type": "string"
+			},
+			"sup_dir": {
+				"type": "string",
+				"defaultValue": "sup/Org005_Service"
+			},
+			"sup_file_first_row_header": {
+				"type": "bool",
+				"defaultValue": true
+			},
+			"blob_name": {
+				"type": "string",
+				"defaultValue": "scpblobdev01"
+			}
+		},
+		"folder": {
+			"name": "SUP/mbkcore"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-03-17T06:18:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

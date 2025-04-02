@@ -1,176 +1,176 @@
 {
-    "name": "SBTSUP0024-pipeline02",
-    "properties": {
-        "description": "提供側変換パイプライン",
-        "activities": [
-            {
-                "name": "SBTSUP0024-pipeline02-web01",
-                "description": "削除情報ファイル内容を取得するアクティビティ",
-                "type": "WebActivity",
-                "dependsOn": [
-                    {
-                        "activity": "SBTSUP0024-pipeline02-callDataFlow01",
-                        "dependencyConditions": [
-                            "Succeeded"
-                        ]
-                    }
-                ],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "method": "GET",
-                    "headers": {
-                        "x-ms-version": "2024-11-04"
-                    },
-                    "url": {
-                        "value": "@pipeline().parameters.del_info_file",
-                        "type": "Expression"
-                    },
-                    "connectVia": {
-                        "referenceName": "AutoResolveIntegrationRuntime",
-                        "type": "IntegrationRuntimeReference"
-                    },
-                    "authentication": {
-                        "type": "MSI",
-                        "resource": "https://storage.azure.com/"
-                    }
-                }
-            },
-            {
-                "name": "SBTSUP0024-pipeline02-web02",
-                "description": "削除情報ファイルに提供ファイルの情報を設定するアクティビティ",
-                "type": "WebActivity",
-                "dependsOn": [
-                    {
-                        "activity": "SBTSUP0024-pipeline02-web01",
-                        "dependencyConditions": [
-                            "Succeeded"
-                        ]
-                    }
-                ],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "method": "PUT",
-                    "headers": {
-                        "x-ms-version": "2024-11-04",
-                        "x-ms-blob-type": "BlockBlob",
-                        "x-ms-meta-tmp": {
-                            "value": "@activity('SBTSUP0024-pipeline02-web01').output.ADFWebActivityResponseHeaders['x-ms-meta-tmp']",
-                            "type": "Expression"
-                        }
-                    },
-                    "url": {
-                        "value": "@pipeline().parameters.del_info_file",
-                        "type": "Expression"
-                    },
-                    "connectVia": {
-                        "referenceName": "AutoResolveIntegrationRuntime",
-                        "type": "IntegrationRuntimeReference"
-                    },
-                    "body": {
-                        "value": "@concat(\nactivity('SBTSUP0024-pipeline02-web01').output.Response,\ndecodeUriComponent('%0D%0A'),\n'sup:',pipeline().parameters.core_dir,'/',pipeline().parameters.core_file_name,\ndecodeUriComponent('%0D%0A'),\n'sup:mbkcorecontainer01/',pipeline().parameters.sup_dir,'/',pipeline().parameters.core_file_name\n)",
-                        "type": "Expression"
-                    },
-                    "authentication": {
-                        "type": "MSI",
-                        "resource": "https://storage.azure.com/"
-                    }
-                }
-            },
-            {
-                "name": "SBTSUP0024-pipeline02-callDataFlow01",
-                "description": "提供ファイルを出力するアクティビティ",
-                "type": "ExecuteDataFlow",
-                "dependsOn": [],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "dataflow": {
-                        "referenceName": "SBTSUP0024_pipeline02_dataFlow01",
-                        "type": "DataFlowReference",
-                        "parameters": {
-                            "sup_file_name": {
-                                "value": "'@{pipeline().parameters.core_file_name}'",
-                                "type": "Expression"
-                            }
-                        },
-                        "datasetParameters": {
-                            "SBTSUP0024Pipeline02DataFlow01Source01": {
-                                "dir": "@pipeline().parameters.core_dir",
-                                "file_name": "@pipeline().parameters.core_file_name"
-                            },
-                            "SBTSUP0024Pipeline02DataFlow01Sink01": {
-                                "dir": {
-                                    "value": "@pipeline().parameters.sup_dir",
-                                    "type": "Expression"
-                                },
-                                "file_name": {
-                                    "value": "@pipeline().parameters.core_file_name",
-                                    "type": "Expression"
-                                },
-                                "file_first_row_header": {
-                                    "value": "@pipeline().parameters.sup_file_first_row_header",
-                                    "type": "Expression"
-                                }
-                            }
-                        }
-                    },
-                    "compute": {
-                        "coreCount": 8,
-                        "computeType": "General"
-                    },
-                    "traceLevel": "Fine"
-                }
-            }
-        ],
-        "policy": {
-            "elapsedTimeMetric": {
-                "duration": "0.01:00:00"
-            }
-        },
-        "parameters": {
-            "core_dir": {
-                "type": "string"
-            },
-            "core_file_name": {
-                "type": "string"
-            },
-            "sup_dir": {
-                "type": "string",
-                "defaultValue": "sup/CXFT000101"
-            },
-            "sup_file_first_row_header": {
-                "type": "bool",
-                "defaultValue": false
-            },
-            "del_info_file": {
-                "type": "string"
-            }
-        },
-        "folder": {
-            "name": "SUP/mbkcore"
-        },
-        "annotations": [],
-        "lastPublishTime": "2025-03-27T05:30:03Z"
-    },
-    "type": "Microsoft.DataFactory/factories/pipelines"
+	"name": "SBTSUP0024-pipeline02",
+	"properties": {
+		"description": "提供側変換パイプライン",
+		"activities": [
+			{
+				"name": "SBTSUP0024-pipeline02-web01",
+				"description": "削除情報ファイル内容を取得するアクティビティ",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "SBTSUP0024-pipeline02-callDataFlow01",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"headers": {
+						"x-ms-version": "2024-11-04"
+					},
+					"url": {
+						"value": "@pipeline().parameters.del_info_file",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://storage.azure.com/"
+					}
+				}
+			},
+			{
+				"name": "SBTSUP0024-pipeline02-web02",
+				"description": "削除情報ファイルに提供ファイルの情報を設定するアクティビティ",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "SBTSUP0024-pipeline02-web01",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "PUT",
+					"headers": {
+						"x-ms-version": "2024-11-04",
+						"x-ms-blob-type": "BlockBlob",
+						"x-ms-meta-tmp": {
+							"value": "@activity('SBTSUP0024-pipeline02-web01').output.ADFWebActivityResponseHeaders['x-ms-meta-tmp']",
+							"type": "Expression"
+						}
+					},
+					"url": {
+						"value": "@pipeline().parameters.del_info_file",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"body": {
+						"value": "@concat(\nactivity('SBTSUP0024-pipeline02-web01').output.Response,\ndecodeUriComponent('%0D%0A'),\n'sup:',pipeline().parameters.core_dir,'/',pipeline().parameters.core_file_name,\ndecodeUriComponent('%0D%0A'),\n'sup:mbkcorecontainer01/',pipeline().parameters.sup_dir,'/',pipeline().parameters.core_file_name\n)",
+						"type": "Expression"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://storage.azure.com/"
+					}
+				}
+			},
+			{
+				"name": "SBTSUP0024-pipeline02-callDataFlow01",
+				"description": "提供ファイルを出力するアクティビティ",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "SBTSUP0024_pipeline02_dataFlow01",
+						"type": "DataFlowReference",
+						"parameters": {
+							"sup_file_name": {
+								"value": "'@{pipeline().parameters.core_file_name}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"SBTSUP0024Pipeline02DataFlow01Source01": {
+								"dir": "@pipeline().parameters.core_dir",
+								"file_name": "@pipeline().parameters.core_file_name"
+							},
+							"SBTSUP0024Pipeline02DataFlow01Sink01": {
+								"dir": {
+									"value": "@pipeline().parameters.sup_dir",
+									"type": "Expression"
+								},
+								"file_name": {
+									"value": "@pipeline().parameters.core_file_name",
+									"type": "Expression"
+								},
+								"file_first_row_header": {
+									"value": "@pipeline().parameters.sup_file_first_row_header",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"policy": {
+			"elapsedTimeMetric": {
+				"duration": "0.01:00:00"
+			}
+		},
+		"parameters": {
+			"core_dir": {
+				"type": "string"
+			},
+			"core_file_name": {
+				"type": "string"
+			},
+			"sup_dir": {
+				"type": "string",
+				"defaultValue": "sup/CXFT000101"
+			},
+			"sup_file_first_row_header": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"del_info_file": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "SUP/mbkcore"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-03-27T05:30:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

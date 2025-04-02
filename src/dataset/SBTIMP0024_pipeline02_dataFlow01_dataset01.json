@@ -1,398 +1,398 @@
 {
-    "name": "SBTIMP0024_pipeline02_dataFlow01_dataset01",
-    "properties": {
-        "linkedServiceName": {
-            "referenceName": "SCP_1_ADFLinkedServices_Blob001_Dev",
-            "type": "LinkedServiceReference"
-        },
-        "parameters": {
-            "dir": {
-                "type": "string"
-            },
-            "file_name": {
-                "type": "string"
-            },
-            "file_column_delimiter": {
-                "type": "string"
-            },
-            "file_encoding": {
-                "type": "string"
-            },
-            "file_quote_char": {
-                "type": "string"
-            },
-            "file_escape_char": {
-                "type": "string"
-            },
-            "file_first_row_header": {
-                "type": "bool"
-            },
-            "null_value": {
-                "type": "string"
-            }
-        },
-        "annotations": [],
-        "type": "DelimitedText",
-        "typeProperties": {
-            "location": {
-                "type": "AzureBlobStorageLocation",
-                "fileName": {
-                    "value": "@dataset().file_name",
-                    "type": "Expression"
-                },
-                "folderPath": {
-                    "value": "@dataset().dir",
-                    "type": "Expression"
-                },
-                "container": "miraicontainer01"
-            },
-            "columnDelimiter": {
-                "value": "@dataset().file_column_delimiter",
-                "type": "Expression"
-            },
-            "encodingName": {
-                "value": "@dataset().file_encoding",
-                "type": "Expression"
-            },
-            "escapeChar": {
-                "value": "@dataset().file_escape_char",
-                "type": "Expression"
-            },
-            "firstRowAsHeader": {
-                "value": "@dataset().file_first_row_header",
-                "type": "Expression"
-            },
-            "nullValue": {
-                "value": "@dataset().null_value",
-                "type": "Expression"
-            },
-            "quoteChar": {
-                "value": "@dataset().file_quote_char",
-                "type": "Expression"
-            }
-        },
-        "schema": [
-            {
-                "name": "PARTNR",
-                "type": "String"
-            },
-            {
-                "name": "SPRAS",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAANA",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAKNA",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAANA_EN",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPANA1",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPANA2",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPANA1_EN",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPANA2_EN",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAKNA",
-                "type": "String"
-            },
-            {
-                "name": "LAND1",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAD1",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAD2",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAD3",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAKAD",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAD1_EN",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAD2_EN",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAD3_EN",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAD4",
-                "type": "String"
-            },
-            {
-                "name": "PSTLZ",
-                "type": "String"
-            },
-            {
-                "name": "TELF1",
-                "type": "String"
-            },
-            {
-                "name": "BLAND",
-                "type": "String"
-            },
-            {
-                "name": "DATE_TO",
-                "type": "String"
-            },
-            {
-                "name": "KOINH",
-                "type": "String"
-            },
-            {
-                "name": "BKONT",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPADB",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPATSR",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPATDB",
-                "type": "String"
-            },
-            {
-                "name": "URL",
-                "type": "String"
-            },
-            {
-                "name": "SORTL",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAIE",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPATRE",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPABRF",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPADEN",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAHEP",
-                "type": "String"
-            },
-            {
-                "name": "ZAETSBT",
-                "type": "String"
-            },
-            {
-                "name": "SWIFT",
-                "type": "String"
-            },
-            {
-                "name": "ZAEGFLG",
-                "type": "String"
-            },
-            {
-                "name": "ZAEBAMS",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPADI",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAP",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPASEC",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAGR1",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAGR2",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAGR3",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPARE",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAPIO",
-                "type": "String"
-            },
-            {
-                "name": "LZONE",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAORG",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAAFME",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAITI",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAINVE",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPARESU",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPARESP",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPASEAC",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPACAAC",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAWAOL",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPACONV",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAMAC",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAHE",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAJU",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPACOMP",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPACOTR",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPACOLA",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPACOLL",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAEQ",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPATA",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAST",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPASITU",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPAHAV",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPANECO",
-                "type": "String"
-            },
-            {
-                "name": "ZAEPACAEQ",
-                "type": "String"
-            },
-            {
-                "name": "ZAEKTSR",
-                "type": "String"
-            },
-            {
-                "name": "ZAEKODB",
-                "type": "String"
-            },
-            {
-                "name": "ERDATE",
-                "type": "String"
-            },
-            {
-                "name": "ERUSNM",
-                "type": "String"
-            },
-            {
-                "name": "EDDATE",
-                "type": "String"
-            },
-            {
-                "name": "EDUSNM",
-                "type": "String"
-            },
-            {
-                "name": "LVORM",
-                "type": "String"
-            },
-            {
-                "name": "ZAEIFNW",
-                "type": "String"
-            }
-        ]
-    },
-    "type": "Microsoft.DataFactory/factories/datasets"
+	"name": "SBTIMP0024_pipeline02_dataFlow01_dataset01",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SCP_1_ADFLinkedServices_Blob001_Dev",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dir": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "string"
+			},
+			"file_column_delimiter": {
+				"type": "string"
+			},
+			"file_encoding": {
+				"type": "string"
+			},
+			"file_quote_char": {
+				"type": "string"
+			},
+			"file_escape_char": {
+				"type": "string"
+			},
+			"file_first_row_header": {
+				"type": "bool"
+			},
+			"null_value": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().dir",
+					"type": "Expression"
+				},
+				"container": "miraicontainer01"
+			},
+			"columnDelimiter": {
+				"value": "@dataset().file_column_delimiter",
+				"type": "Expression"
+			},
+			"encodingName": {
+				"value": "@dataset().file_encoding",
+				"type": "Expression"
+			},
+			"escapeChar": {
+				"value": "@dataset().file_escape_char",
+				"type": "Expression"
+			},
+			"firstRowAsHeader": {
+				"value": "@dataset().file_first_row_header",
+				"type": "Expression"
+			},
+			"nullValue": {
+				"value": "@dataset().null_value",
+				"type": "Expression"
+			},
+			"quoteChar": {
+				"value": "@dataset().file_quote_char",
+				"type": "Expression"
+			}
+		},
+		"schema": [
+			{
+				"name": "PARTNR",
+				"type": "String"
+			},
+			{
+				"name": "SPRAS",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAANA",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAKNA",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAANA_EN",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPANA1",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPANA2",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPANA1_EN",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPANA2_EN",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAKNA",
+				"type": "String"
+			},
+			{
+				"name": "LAND1",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAD1",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAD2",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAD3",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAKAD",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAD1_EN",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAD2_EN",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAD3_EN",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAD4",
+				"type": "String"
+			},
+			{
+				"name": "PSTLZ",
+				"type": "String"
+			},
+			{
+				"name": "TELF1",
+				"type": "String"
+			},
+			{
+				"name": "BLAND",
+				"type": "String"
+			},
+			{
+				"name": "DATE_TO",
+				"type": "String"
+			},
+			{
+				"name": "KOINH",
+				"type": "String"
+			},
+			{
+				"name": "BKONT",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPADB",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPATSR",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPATDB",
+				"type": "String"
+			},
+			{
+				"name": "URL",
+				"type": "String"
+			},
+			{
+				"name": "SORTL",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAIE",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPATRE",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPABRF",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPADEN",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAHEP",
+				"type": "String"
+			},
+			{
+				"name": "ZAETSBT",
+				"type": "String"
+			},
+			{
+				"name": "SWIFT",
+				"type": "String"
+			},
+			{
+				"name": "ZAEGFLG",
+				"type": "String"
+			},
+			{
+				"name": "ZAEBAMS",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPADI",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAP",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPASEC",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAGR1",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAGR2",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAGR3",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPARE",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAPIO",
+				"type": "String"
+			},
+			{
+				"name": "LZONE",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAORG",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAAFME",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAITI",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAINVE",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPARESU",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPARESP",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPASEAC",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPACAAC",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAWAOL",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPACONV",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAMAC",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAHE",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAJU",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPACOMP",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPACOTR",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPACOLA",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPACOLL",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAEQ",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPATA",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAST",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPASITU",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPAHAV",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPANECO",
+				"type": "String"
+			},
+			{
+				"name": "ZAEPACAEQ",
+				"type": "String"
+			},
+			{
+				"name": "ZAEKTSR",
+				"type": "String"
+			},
+			{
+				"name": "ZAEKODB",
+				"type": "String"
+			},
+			{
+				"name": "ERDATE",
+				"type": "String"
+			},
+			{
+				"name": "ERUSNM",
+				"type": "String"
+			},
+			{
+				"name": "EDDATE",
+				"type": "String"
+			},
+			{
+				"name": "EDUSNM",
+				"type": "String"
+			},
+			{
+				"name": "LVORM",
+				"type": "String"
+			},
+			{
+				"name": "ZAEIFNW",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

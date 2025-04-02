@@ -1,187 +1,187 @@
 {
-    "name": "SBTIMP0015-pipeline01",
-    "properties": {
-        "description": "取込側変換パイプライン",
-        "activities": [
-            {
-                "name": "SBTIMP0015-pipeline01-copy01",
-                "description": "一時ファイルから基軸ファイルを作成し、取込側基軸ファイル領域に格納するアクティビティ",
-                "type": "Copy",
-                "dependsOn": [],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "source": {
-                        "type": "DelimitedTextSource",
-                        "storeSettings": {
-                            "type": "AzureBlobStorageReadSettings",
-                            "recursive": true,
-                            "enablePartitionDiscovery": false
-                        },
-                        "formatSettings": {
-                            "type": "DelimitedTextReadSettings"
-                        }
-                    },
-                    "sink": {
-                        "type": "DelimitedTextSink",
-                        "storeSettings": {
-                            "type": "AzureBlobStorageWriteSettings"
-                        },
-                        "formatSettings": {
-                            "type": "DelimitedTextWriteSettings",
-                            "quoteAllText": true,
-                            "fileExtension": ".txt"
-                        }
-                    },
-                    "enableStaging": false,
-                    "translator": {
-                        "type": "TabularTranslator",
-                        "typeConversion": true,
-                        "typeConversionSettings": {
-                            "allowDataTruncation": true,
-                            "treatBooleanAsNumber": false
-                        }
-                    }
-                },
-                "inputs": [
-                    {
-                        "referenceName": "SBTIMP0015_pipeline01_dataset01",
-                        "type": "DatasetReference",
-                        "parameters": {
-                            "dir": "@replace(pipeline().parameters.tmp_dir, 'bloomcontainer01/','')",
-                            "file_name": "@pipeline().parameters.tmp_file_name",
-                            "file_column_delimiter": "@pipeline().parameters.tmp_file_column_delimiter.value",
-                            "file_encoding": "@pipeline().parameters.tmp_file_encoding",
-                            "file_quote_char": "@pipeline().parameters.tmp_file_quote_char",
-                            "file_escape_char": "@pipeline().parameters.tmp_file_escape_char",
-                            "file_first_row_header": "@pipeline().parameters.tmp_file_first_row_header",
-                            "null_value": "@pipeline().parameters.tmp_null_value"
-                        }
-                    }
-                ],
-                "outputs": [
-                    {
-                        "referenceName": "SBTIMP0015_pipeline01_dataset02",
-                        "type": "DatasetReference",
-                        "parameters": {
-                            "dir": "@pipeline().parameters.core_dir",
-                            "file_name": "@variables('core_file_name')"
-                        }
-                    }
-                ]
-            },
-            {
-                "name": "SBTIMP0015-pipeline01-web01",
-                "description": "削除情報ファイルに一時ファイルと基軸ファイルの情報を設定するアクティビティ",
-                "type": "WebActivity",
-                "dependsOn": [
-                    {
-                        "activity": "SBTIMP0015-pipeline01-copy01",
-                        "dependencyConditions": [
-                            "Succeeded"
-                        ]
-                    }
-                ],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "method": "PUT",
-                    "headers": {
-                        "x-ms-version": "2024-11-04",
-                        "x-ms-meta-tmp": {
-                            "value": "@pipeline().parameters.tmp_file_name",
-                            "type": "Expression"
-                        },
-                        "x-ms-blob-type": "BlockBlob"
-                    },
-                    "url": {
-                        "value": "@concat('https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',pipeline().parameters.tmp_dir,'_DEL/DEL_INFO')",
-                        "type": "Expression"
-                    },
-                    "connectVia": {
-                        "referenceName": "AutoResolveIntegrationRuntime",
-                        "type": "IntegrationRuntimeReference"
-                    },
-                    "body": {
-                        "value": "@concat('imp:bloomcontainer01/',pipeline().parameters.core_dir,'/',variables('core_file_name'))",
-                        "type": "Expression"
-                    },
-                    "authentication": {
-                        "type": "MSI",
-                        "resource": "https://storage.azure.com/"
-                    }
-                }
-            }
-        ],
-        "policy": {
-            "elapsedTimeMetric": {
-                "duration": "0.01:00:00"
-            }
-        },
-        "parameters": {
-            "tmp_dir": {
-                "type": "string"
-            },
-            "tmp_file_name": {
-                "type": "string"
-            },
-            "tmp_file_column_delimiter": {
-                "type": "object",
-                "defaultValue": {
-                    "value": "\t"
-                }
-            },
-            "tmp_file_encoding": {
-                "type": "string",
-                "defaultValue": "UTF-8 without BOM"
-            },
-            "tmp_file_quote_char": {
-                "type": "string",
-                "defaultValue": "\""
-            },
-            "tmp_file_escape_char": {
-                "type": "string",
-                "defaultValue": "\""
-            },
-            "tmp_file_first_row_header": {
-                "type": "bool",
-                "defaultValue": true
-            },
-            "tmp_null_value": {
-                "type": "string"
-            },
-            "core_dir": {
-                "type": "string",
-                "defaultValue": "core/Org003_Service"
-            },
-            "blob_name": {
-                "type": "string",
-                "defaultValue": "scpblobdev01"
-            }
-        },
-        "variables": {
-            "core_file_name": {
-                "type": "String",
-                "defaultValue": "@concat(if(equals(lastIndexOf(pipeline().parameters.tmp_file_name, '.'), -1) , pipeline().parameters.tmp_file_name,substring(pipeline().parameters.tmp_file_name, 0, lastIndexOf(pipeline().parameters.tmp_file_name, '.'))),'_SC',formatDateTime(addhours(utcNow(),9),'yyyyMMdd-HHmmss'),'.csv')"
-            }
-        },
-        "folder": {
-            "name": "IMP/bloom"
-        },
-        "annotations": [],
-        "lastPublishTime": "2025-03-17T07:15:40Z"
-    },
-    "type": "Microsoft.DataFactory/factories/pipelines"
+	"name": "SBTIMP0015-pipeline01",
+	"properties": {
+		"description": "取込側変換パイプライン",
+		"activities": [
+			{
+				"name": "SBTIMP0015-pipeline01-copy01",
+				"description": "一時ファイルから基軸ファイルを作成し、取込側基軸ファイル領域に格納するアクティビティ",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SBTIMP0015_pipeline01_dataset01",
+						"type": "DatasetReference",
+						"parameters": {
+							"dir": "@replace(pipeline().parameters.tmp_dir, 'bloomcontainer01/','')",
+							"file_name": "@pipeline().parameters.tmp_file_name",
+							"file_column_delimiter": "@pipeline().parameters.tmp_file_column_delimiter.value",
+							"file_encoding": "@pipeline().parameters.tmp_file_encoding",
+							"file_quote_char": "@pipeline().parameters.tmp_file_quote_char",
+							"file_escape_char": "@pipeline().parameters.tmp_file_escape_char",
+							"file_first_row_header": "@pipeline().parameters.tmp_file_first_row_header",
+							"null_value": "@pipeline().parameters.tmp_null_value"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SBTIMP0015_pipeline01_dataset02",
+						"type": "DatasetReference",
+						"parameters": {
+							"dir": "@pipeline().parameters.core_dir",
+							"file_name": "@variables('core_file_name')"
+						}
+					}
+				]
+			},
+			{
+				"name": "SBTIMP0015-pipeline01-web01",
+				"description": "削除情報ファイルに一時ファイルと基軸ファイルの情報を設定するアクティビティ",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "SBTIMP0015-pipeline01-copy01",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "PUT",
+					"headers": {
+						"x-ms-version": "2024-11-04",
+						"x-ms-meta-tmp": {
+							"value": "@pipeline().parameters.tmp_file_name",
+							"type": "Expression"
+						},
+						"x-ms-blob-type": "BlockBlob"
+					},
+					"url": {
+						"value": "@concat('https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',pipeline().parameters.tmp_dir,'_DEL/DEL_INFO')",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"body": {
+						"value": "@concat('imp:bloomcontainer01/',pipeline().parameters.core_dir,'/',variables('core_file_name'))",
+						"type": "Expression"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://storage.azure.com/"
+					}
+				}
+			}
+		],
+		"policy": {
+			"elapsedTimeMetric": {
+				"duration": "0.01:00:00"
+			}
+		},
+		"parameters": {
+			"tmp_dir": {
+				"type": "string"
+			},
+			"tmp_file_name": {
+				"type": "string"
+			},
+			"tmp_file_column_delimiter": {
+				"type": "object",
+				"defaultValue": {
+					"value": "\t"
+				}
+			},
+			"tmp_file_encoding": {
+				"type": "string",
+				"defaultValue": "UTF-8 without BOM"
+			},
+			"tmp_file_quote_char": {
+				"type": "string",
+				"defaultValue": "\""
+			},
+			"tmp_file_escape_char": {
+				"type": "string",
+				"defaultValue": "\""
+			},
+			"tmp_file_first_row_header": {
+				"type": "bool",
+				"defaultValue": true
+			},
+			"tmp_null_value": {
+				"type": "string"
+			},
+			"core_dir": {
+				"type": "string",
+				"defaultValue": "core/Org003_Service"
+			},
+			"blob_name": {
+				"type": "string",
+				"defaultValue": "scpblobdev01"
+			}
+		},
+		"variables": {
+			"core_file_name": {
+				"type": "String",
+				"defaultValue": "@concat(if(equals(lastIndexOf(pipeline().parameters.tmp_file_name, '.'), -1) , pipeline().parameters.tmp_file_name,substring(pipeline().parameters.tmp_file_name, 0, lastIndexOf(pipeline().parameters.tmp_file_name, '.'))),'_SC',formatDateTime(addhours(utcNow(),9),'yyyyMMdd-HHmmss'),'.csv')"
+			}
+		},
+		"folder": {
+			"name": "IMP/bloom"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-03-17T07:15:40Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

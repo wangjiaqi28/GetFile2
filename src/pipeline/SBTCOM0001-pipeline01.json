@@ -1,109 +1,109 @@
 {
-    "name": "SBTCOM0001-pipeline01",
-    "properties": {
-        "description": "削除判定パイプライン",
-        "activities": [
-            {
-                "name": "SBTCOM0001-pipeline01-web01",
-                "description": "削除情報ファイルのメタデータに設定されている一時ファイル名を取得te",
-                "type": "WebActivity",
-                "dependsOn": [],
-                "policy": {
-                    "timeout": "0.12:00:00",
-                    "retry": 1,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "typeProperties": {
-                    "method": "GET",
-                    "headers": {
-                        "x-ms-version": "2024-11-04"
-                    },
-                    "url": {
-                        "value": "@concat('https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',pipeline().parameters.tmp_dir,'_DEL/DEL_INFO','?comp=metadata')",
-                        "type": "Expression"
-                    },
-                    "connectVia": {
-                        "referenceName": "AutoResolveIntegrationRuntime",
-                        "type": "IntegrationRuntimeReference"
-                    },
-                    "authentication": {
-                        "type": "MSI",
-                        "resource": "https://storage.azure.com/"
-                    }
-                }
-            },
-            {
-                "name": "SBTCOM0001-pipeline01-ifCondition01",
-                "description": "下記条件に満たす場合True,それ以外の場合False\n・削除対象の一時ファイル名と削除情報ファイルのメタデータに設定している一時ファイル名が一致する場合",
-                "type": "IfCondition",
-                "dependsOn": [
-                    {
-                        "activity": "SBTCOM0001-pipeline01-web01",
-                        "dependencyConditions": [
-                            "Succeeded"
-                        ]
-                    }
-                ],
-                "userProperties": [],
-                "typeProperties": {
-                    "expression": {
-                        "value": "@equals(pipeline().parameters.tmp_file_name, activity('SBTCOM0001-pipeline01-web01').output.ADFWebActivityResponseHeaders['x-ms-meta-tmp'])",
-                        "type": "Expression"
-                    },
-                    "ifTrueActivities": [
-                        {
-                            "name": "SBTCOM0001-pipeline01-excutePipeline01",
-                            "description": "ファイル削除パイプラインを呼び出し",
-                            "type": "ExecutePipeline",
-                            "dependsOn": [],
-                            "policy": {
-                                "secureInput": false
-                            },
-                            "userProperties": [],
-                            "typeProperties": {
-                                "pipeline": {
-                                    "referenceName": "SBTCOM0001-pipeline02",
-                                    "type": "PipelineReference"
-                                },
-                                "waitOnCompletion": true,
-                                "parameters": {
-                                    "del_file_dir": {
-                                        "value": "@concat(substring(pipeline().parameters.tmp_dir,add(indexOf(pipeline().parameters.tmp_dir, '/'),1),sub(sub(length(pipeline().parameters.tmp_dir),indexOf(pipeline().parameters.tmp_dir, '/')),1)),'_DEL')",
-                                        "type": "Expression"
-                                    },
-                                    "container": {
-                                        "value": "@substring(pipeline().parameters.tmp_dir, 0, indexOf(pipeline().parameters.tmp_dir, '/'))",
-                                        "type": "Expression"
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                }
-            }
-        ],
-        "policy": {
-            "elapsedTimeMetric": {
-                "duration": "0.01:00:00"
-            }
-        },
-        "parameters": {
-            "tmp_dir": {
-                "type": "string"
-            },
-            "tmp_file_name": {
-                "type": "string"
-            },
-            "blob_name": {
-                "type": "string",
-                "defaultValue": "scpblobdev01"
-            }
-        },
-        "annotations": [],
-        "lastPublishTime": "2025-03-28T03:08:15Z"
-    },
-    "type": "Microsoft.DataFactory/factories/pipelines"
+	"name": "SBTCOM0001-pipeline01",
+	"properties": {
+		"description": "削除判定パイプライン",
+		"activities": [
+			{
+				"name": "SBTCOM0001-pipeline01-web01",
+				"description": "削除情報ファイルのメタデータに設定されている一時ファイル名を取得",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"headers": {
+						"x-ms-version": "2024-11-04"
+					},
+					"url": {
+						"value": "@concat('https://',pipeline().parameters.blob_name,'.blob.core.windows.net/',pipeline().parameters.tmp_dir,'_DEL/DEL_INFO','?comp=metadata')",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://storage.azure.com/"
+					}
+				}
+			},
+			{
+				"name": "SBTCOM0001-pipeline01-ifCondition01",
+				"description": "下記条件に満たす場合True,それ以外の場合False\n・削除対象の一時ファイル名と削除情報ファイルのメタデータに設定している一時ファイル名が一致する場合",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "SBTCOM0001-pipeline01-web01",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(pipeline().parameters.tmp_file_name, activity('SBTCOM0001-pipeline01-web01').output.ADFWebActivityResponseHeaders['x-ms-meta-tmp'])",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "SBTCOM0001-pipeline01-excutePipeline01",
+							"description": "ファイル削除パイプラインを呼び出し",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "SBTCOM0001-pipeline02",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"del_file_dir": {
+										"value": "@concat(substring(pipeline().parameters.tmp_dir,add(indexOf(pipeline().parameters.tmp_dir, '/'),1),sub(sub(length(pipeline().parameters.tmp_dir),indexOf(pipeline().parameters.tmp_dir, '/')),1)),'_DEL')",
+										"type": "Expression"
+									},
+									"container": {
+										"value": "@substring(pipeline().parameters.tmp_dir, 0, indexOf(pipeline().parameters.tmp_dir, '/'))",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"policy": {
+			"elapsedTimeMetric": {
+				"duration": "0.01:00:00"
+			}
+		},
+		"parameters": {
+			"tmp_dir": {
+				"type": "string"
+			},
+			"tmp_file_name": {
+				"type": "string"
+			},
+			"blob_name": {
+				"type": "string",
+				"defaultValue": "scpblobdev01"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-03-28T03:08:15Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

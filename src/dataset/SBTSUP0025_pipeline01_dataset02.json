@@ -1,41 +1,41 @@
 {
-    "name": "SBTSUP0025_pipeline01_dataset02",
-    "properties": {
-        "linkedServiceName": {
-            "referenceName": "SCP_1_ADFLinkedServices_Blob002_Dev",
-            "type": "LinkedServiceReference"
-        },
-        "parameters": {
-            "core_dir": {
-                "type": "string"
-            },
-            "core_file_name": {
-                "type": "string"
-            }
-        },
-        "annotations": [],
-        "type": "DelimitedText",
-        "typeProperties": {
-            "location": {
-                "type": "AzureBlobStorageLocation",
-                "fileName": {
-                    "value": "@dataset().core_file_name",
-                    "type": "Expression"
-                },
-                "folderPath": {
-                    "value": "@dataset().core_dir",
-                    "type": "Expression"
-                },
-                "container": "mbkcorecontainer01"
-            },
-            "columnDelimiter": ",",
-            "rowDelimiter": "\n",
-            "encodingName": "UTF-8 without BOM",
-            "escapeChar": "\"",
-            "firstRowAsHeader": false,
-            "quoteChar": "\""
-        },
-        "schema": []
-    },
-    "type": "Microsoft.DataFactory/factories/datasets"
+	"name": "SBTSUP0025_pipeline01_dataset02",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SCP_1_ADFLinkedServices_Blob002_Dev",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"core_dir": {
+				"type": "string"
+			},
+			"core_file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().core_file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().core_dir",
+					"type": "Expression"
+				},
+				"container": "mbkcorecontainer01"
+			},
+			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
+			"encodingName": "UTF-8 without BOM",
+			"escapeChar": "\"",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

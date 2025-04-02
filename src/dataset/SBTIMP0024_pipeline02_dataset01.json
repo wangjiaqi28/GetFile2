@@ -1,39 +1,39 @@
 {
-    "name": "SBTIMP0024_pipeline02_dataset01",
-    "properties": {
-        "linkedServiceName": {
-            "referenceName": "SCP_1_ADFLinkedServices_Blob001_Dev",
-            "type": "LinkedServiceReference"
-        },
-        "parameters": {
-            "dir": {
-                "type": "string"
-            },
-            "file_name": {
-                "type": "string"
-            }
-        },
-        "annotations": [],
-        "type": "DelimitedText",
-        "typeProperties": {
-            "location": {
-                "type": "AzureBlobStorageLocation",
-                "fileName": {
-                    "value": "@dataset().file_name",
-                    "type": "Expression"
-                },
-                "folderPath": {
-                    "value": "@dataset().dir",
-                    "type": "Expression"
-                },
-                "container": "miraicontainer01"
-            },
-            "columnDelimiter": ",",
-            "escapeChar": "\\",
-            "firstRowAsHeader": true,
-            "quoteChar": "\""
-        },
-        "schema": []
-    },
-    "type": "Microsoft.DataFactory/factories/datasets"
+	"name": "SBTIMP0024_pipeline02_dataset01",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SCP_1_ADFLinkedServices_Blob001_Dev",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dir": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().dir",
+					"type": "Expression"
+				},
+				"container": "miraicontainer01"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
